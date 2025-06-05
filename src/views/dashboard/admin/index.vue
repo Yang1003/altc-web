@@ -1,136 +1,117 @@
 <template>
-  <div class="dashboard-editor-container">
-    <github-corner class="github-corner" />
-
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
+    <el-container>
+      <el-main>
+        <div id="app" style="text-align: center; margin-top: 50px; height: 100px">
+          <h1>{{ $t("dashboard.searchTitle") }}</h1>
+          <el-input style="width: 600px" placeholder="关键字" v-model.trim="searchQuery" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" @click="performSearch"></el-button>
+          </el-input>
         </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
+        <div id="display">
+          <el-row>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+            <el-col :span="6">
+              <span><i class="el-icon-edit"></i></span>
+              <span>整车数据</span>
+            </el-col>
+          </el-row>
         </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
         </div>
-      </el-col>
-    </el-row>
-
-    <!-- <el-row :gutter="8">
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
-        <transaction-table />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <todo-list />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <box-card />
-      </el-col>
-    </el-row> -->
-
-    <el-row>
-      <p class="copyright">
-        {{ $t("dashboardIndex.copyright") }}
-      </p>
-    </el-row>
-  </div>
-</template>
-
-<script>
-import GithubCorner from '@/components/GithubCorner'
-import PanelGroup from './components/PanelGroup'
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
-import TransactionTable from './components/TransactionTable'
-import TodoList from './components/TodoList'
-import BoxCard from './components/BoxCard'
-
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
+      </el-main>
+    </el-container>
+  </template>
+  
+  <script>
+  export default {
+    name: "DashboardAdmin",
+    data() {
+      return {
+        searchQuery: "",
+        results: [],
+      };
+    },
+  
+    methods: {
+      performSearch() {
+        // 这里可以替换为实际的搜索逻辑，例如调用后端API
+        this.results = [`结果1: ${this.searchQuery}`, `结果2: ${this.searchQuery}`, `结果3: ${this.searchQuery}`];
+      },
+    },
+  };
+  </script>
+  
+  <style lang="scss" scoped>
+  #display {
+    background-color: antiquewhite;
+    margin: 10px 50px;
   }
-}
-
-export default {
-  name: 'DashboardAdmin',
-  components: {
-    GithubCorner,
-    PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart,
-    TransactionTable,
-    TodoList,
-    BoxCard
-  },
-  data() {
-    return {
-      lineChartData: lineChartData.newVisitis,
-      panelData: {}
+  
+  .el-select .el-input {
+    width: 130px;
+  }
+  .input-with-select .el-input-group__prepend {
+    background-color: #fff;
+  }
+  
+  .dashboard-editor-container {
+    padding: 32px;
+    background-color: rgb(240, 242, 245);
+    position: relative;
+  
+    .github-corner {
+      position: absolute;
+      top: 0px;
+      border: 0;
+      right: 0;
     }
-  },
-
-  methods: {
-
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+  
+    .chart-wrapper {
+      background: #fff;
+      padding: 16px 16px 0;
+      margin-bottom: 32px;
     }
   }
-}
-</script>
-
-<style lang="scss" scoped>
-.dashboard-editor-container {
-  padding: 32px;
-  background-color: rgb(240, 242, 245);
-  position: relative;
-
-  .github-corner {
-    position: absolute;
-    top: 0px;
-    border: 0;
-    right: 0;
+  
+  @media (max-width: 1024px) {
+    .chart-wrapper {
+      padding: 8px;
+    }
   }
-
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
-  }
-}
-
-.copyright {
-  color: rgb(2, 54, 97);
-  text-align: center;
-  font-size: 10px;
-}
-
-@media (max-width: 1024px) {
-  .chart-wrapper {
-    padding: 8px;
-  }
-}
-</style>
+  </style>
+  
