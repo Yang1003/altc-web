@@ -1,7 +1,7 @@
 <template>
     <footer class="app-footer">
       <div class="footer-content">
-        <p>Copyright©{{ currentYear }}{{ $t("dashboardIndex.copyright") }}</p>
+        <p>Copyright © {{ currentYear }} {{ $t("dashboardIndex.copyright") }}</p>
         <ul class="footer-links">
           <li><a href="#">关于我们</a></li>
           <li><a href="#">联系我们</a></li>
@@ -25,7 +25,7 @@
   
   <style scoped>
   .app-footer {
-    padding: 20px 0;
+    padding: 15px 0;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -35,7 +35,7 @@
   }
   
   .footer-content p {
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
   }
   
   .footer-links {

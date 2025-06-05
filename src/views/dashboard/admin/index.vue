@@ -53,6 +53,46 @@
             </li>
           </ul>
         </div>
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
+        <div id="searchResult">
+          <p v-if="results.length > 0" style="margin-top: 20px">搜索结果：</p>
+          <ul style="list-style-type: none; padding: 0">
+            <li v-for="(result, index) in results" :key="index" style="margin: 10px 0">
+              {{ result }}
+            </li>
+          </ul>
+        </div>
       </el-main>
     </el-container>
   </template>
