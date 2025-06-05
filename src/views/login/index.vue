@@ -70,7 +70,78 @@
         >
           {{ $t("login.logIn") }}
         </el-button>
+        <el-row>
+          <el-col style="text-align: right;">
+            <el-button style="color:white"
+              type="text"
+              @click.native.prevent="handleRegisterOpen"
+            >
+              {{ $t("login.register") }}
+            </el-button>
+          </el-col>
+        </el-row>
+
       </el-form>
+        <!-- 对话框(申请账号) -->
+        <el-dialog :title="$t('login.register')" :visible.sync="register.open" width="500px" :close-on-click-modal="false" :append-to-body="true" @closed="handleRegisterClose" class="-dialog-body">
+            <el-form
+        ref="registerForm"
+        :model="registerForm"
+        :rules="loginRules"
+        class="login-form"
+        autocomplete="on"
+        label-position="left"
+      >
+        <el-form-item prop="username">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input
+            ref="username"
+            v-model.trim="registerForm.username"
+            :placeholder="$t('login.username')"
+            name="username"
+            type="text"
+            tabindex="1"
+            autocomplete="on"
+          />
+        </el-form-item>
+
+        <el-tooltip
+            v-model.trim="capsTooltip"
+          content="Caps lock is On"
+          placement="right"
+          manual
+        >
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="registerForm.password"
+              :type="passwordType"
+              :placeholder="$t('login.password')"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon
+                :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+              />
+            </span>
+          </el-form-item>
+        </el-tooltip>
+      </el-form>
+          <span slot="footer" class="dialog-footer nalDetail-footer">
+            <el-button @click="handleRegisterClose" size="small"> {{ $t("btn.cancel") }}</el-button>
+            <el-button @click="handleRegister" type="success" size="small"> {{ $t("btn.confirm") }}</el-button>
+          </span>
+        </el-dialog>
     </el-container>
   </div>
 </template>
@@ -85,14 +156,14 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码长度不能小于6'))
       } else {
         callback()
       }
@@ -116,6 +187,13 @@ export default {
       showDialog: false,
       redirect: undefined,
       otherQuery: {},
+        register: {
+            open : false,
+        },
+        registerForm: {
+        username: '',
+        password: '',
+      },
     }
   },
   watch: {
@@ -187,7 +265,35 @@ export default {
         }
         return acc
       }, {})
-    }
+      },
+      handleRegister() {
+      this.$refs.registerForm.validate((valid) => {
+        if (valid) {
+          this.loading = true
+          this.$store
+            .dispatch('user/register', this.registerForm)
+            .then(() => {
+                this.$message.success("注册成功，请使用账号密码登录！");
+                this.loading = false
+                this.handleRegisterClose();
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      },
+      handleRegisterOpen() {
+          this.register.open = true;
+      },
+      handleRegisterClose() { 
+          this.register.open = false;
+          this.registerForm.username = '';
+          this.registerForm.password = '';
+      },
   }
 }
 </script>

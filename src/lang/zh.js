@@ -149,7 +149,13 @@ export default {
     dateAnalysis: '测试数据分析',
     boradTestResult: '宽产测试总结果',
     boradTestRecord: '宽产工位测试记录'
-  },
+    },
+    btn: {
+        cancel: '取消',
+        colse: '关闭',
+        register: '注册',
+        confirm: '确认'
+    },
   navbar: {
     dashboard: '首页',
     github: '接口文档地址',
@@ -161,6 +167,7 @@ export default {
   login: {
     title: 'ALTC',
     logIn: '登录',
+    register: '注册',
     username: '账号',
     password: '密码',
     any: '随便填',

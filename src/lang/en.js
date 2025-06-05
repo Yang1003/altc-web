@@ -163,6 +163,7 @@ export default {
   login: {
     title: 'System Login',
     logIn: 'Login',
+    register: 'Register',
     username: 'Username',
     password: 'Password',
     any: 'any',

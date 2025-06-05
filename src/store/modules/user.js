@@ -1,6 +1,7 @@
 import {
   login,
-  logout,
+    logout,
+    register,
   getInfo
 } from '@/api/user'
 import {
@@ -53,6 +54,33 @@ const actions = {
     } = userInfo
     return new Promise((resolve, reject) => {
       login({
+        username: username.trim(),
+        password: password
+      }).then(response => {
+        const {
+          data
+        } = response
+        commit('SET_TOKEN', data.token)
+        commit('SET_PERMIT', data.role)
+        setToken(data.token)
+
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+    },
+    
+      // user register
+      register({
+    commit
+  }, userInfo) {
+    const {
+      username,
+      password
+    } = userInfo
+    return new Promise((resolve, reject) => {
+        register({
         username: username.trim(),
         password: password
       }).then(response => {

@@ -653,7 +653,6 @@ import { selectDriver } from '@/api/software/softwareDriver'
 
 const APP_URL = process.env.VUE_APP_BASE_API
 
-const FILE_PREFIX = ''
 const HEADER = {
   headers: {
     'Access-Control-Allow-Credentials': true,
