@@ -11,6 +11,7 @@ import Layout from '@/layout'
 // import chartsRouter from './modules/charts'
 // import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
+import userManagerRouter from './modules/usermanager'
 import testResouceRouter from './modules/testResouceRouter'
 import testProgressRouter from './modules/testProgressRouter'
 import autoLunchRouter from './modules/autoLunchRouter'
@@ -186,7 +187,7 @@ export const asyncRoutes = [
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
-
+  userManagerRouter,
   testResouceRouter,
   testProgressRouter,
   autoLunchRouter,

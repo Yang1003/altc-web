@@ -3,11 +3,12 @@
       <!-- 搜索工作栏 -->
       <el-container>
         <el-main>
-          <el-form size="small" :model="queryParams" ref="queryParams" label-width="120px" style="width: 100%" :inline="true" @submit.native.prevent @keyup.native.enter="search">
-            <el-form-item label="用户名" prop="username">
+          <el-form size="small" :model="queryParams" ref="queryParams" label-width="100px" style="width: 100%" :inline="true" @submit.native.prevent @keyup.native.enter="search">
+            <el-form-item label="姓名/用户名" prop="username">
               <el-input v-model="queryParams.username"></el-input>
             </el-form-item>
             <el-button size="small" type="primary" icon="el-icon-search" plain @click="search"> 查询 </el-button>
+            <el-button size="small" v-if="conf.pageRight.rightMap.add" type="success" icon="el-icon-plus" @click="handleAddOpen"> 新增用户 </el-button>
           </el-form>
   
           <!-- 列表 -->
@@ -16,7 +17,7 @@
   
             <el-table-column align="center" prop="displayName" label="姓名"> </el-table-column>
             <el-table-column align="center" prop="username" label="用户名"> </el-table-column>
-            <el-table-column align="center" :show-overflow-tooltip="true" width="120" prop="roleStr" label="角色"> </el-table-column>
+            <el-table-column align="center" :show-overflow-tooltip="true" min-width="120" prop="roleStr" label="角色"> </el-table-column>
   
             <el-table-column align="center" prop="modifiedUserName" label="创建人"> </el-table-column>
             <el-table-column align="center" prop="modifiedDate" label="创建时间"> </el-table-column>
@@ -24,9 +25,9 @@
             <el-table-column label="操作" fixed="right" align="center" width="150">
               <template slot-scope="scope">
                 <span>
-                  <el-button size="small" type="text" @click="handleViewOpen(scope.row)">查看 </el-button>
-                  <el-button size="small" type="text" v-if="conf.editAuth" @click="handleModifyOpen(scope.row)">编辑 </el-button>
-                  <el-button size="small" type="text" v-if="conf.editAuth" @click="handleDeleteOpen(scope.row)">删除 </el-button>
+                  <el-button size="small" type="text" v-if="conf.pageRight.rightMap.modify" @click="handleModifyOpen(scope.row)">编辑</el-button>
+                  <el-button size="small" type="text" v-if="conf.pageRight.rightMap.delete" @click="handleDeleteOpen(scope.row)">删除 </el-button>
+                  <el-button size="small" type="text" v-if="conf.pageRight.superAdmin" @click="handleResetPasswordByUsername(scope.row)">重置密码 </el-button>
                 </span>
               </template>
             </el-table-column>
@@ -34,22 +35,48 @@
           <!-- 分页组件 -->
           <pagination :total="total" :page.sync="queryParams.pageIndex" :limit.sync="queryParams.pageSize" @pagination="getList" />
   
+          <!-- 对话框(修改) -->
+          <el-dialog :title="add.title" :visible.sync="add.open" width="600px" :close-on-click-modal="false" :append-to-body="true" @closed="handleAddClose">
+            <el-form ref="addForm" :model="add.form" :rules="add.rules" label-width="150px" size="small">
+              <el-row>
+                <el-col :span="18">
+                  <el-form-item label="用户名" prop="username">
+                    <el-input v-model.trim="add.form.username" placeholder="请输入" :disabled="add.type != 1"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="18">
+                  <el-form-item label="姓名" prop="displayName">
+                    <el-input v-model.trim="add.form.displayName" placeholder="请输入" :disabled="add.view"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+  
+              <el-row>
+                <el-col :span="18">
+                  <el-form-item label="角色" prop="roles">
+                    <el-select v-model="add.form.roles" filterable multiple>
+                      <el-option v-for="role in conf.roles" :key="role.name" :value="role.name" :label="role.name"> </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer" v-if="!add.view">
+              <el-button @click="handleAddClose" size="small">取 消</el-button>
+              <el-button type="primary" @click="handleSubmitAdd" size="small">确 定</el-button>
+            </span>
+          </el-dialog>
         </el-main>
       </el-container>
     </div>
   </template>
   
   <script>
-  const APP_URL = "/api/ptmlabel";
-  // const APP_URL = "http://localhost:8096";
-  const HEADER = {
-    headers: {
-      "Access-Control-Allow-Credentials": true,
-      withCredentials: false,
-    },
-  };
   export default {
-    name: "netaccess_rule",
+    name: "usermanager",
+    path: "/base/user",
     components: {
       Pagination: {
         name: "Pagination",
@@ -116,116 +143,47 @@
           },
         },
         template: `
-                <div :class="{'hidden':hidden}">
-                <el-pagination
-                  :background="background"
-                  :current-page.sync="currentPage"
-                  :page-size.sync="pageSize"
-                  :layout="layout"
-                  :page-sizes="pageSizes"
-                  :total="total"
-                  v-bind="$attrs"
-                  @size-change="handleSizeChange"
-                  @current-change="handleCurrentChange"
-                />
-                </div>
-              `,
+                  <div :class="{'hidden':hidden}">
+                  <el-pagination
+                    :background="background"
+                    :current-page.sync="currentPage"
+                    :page-size.sync="pageSize"
+                    :layout="layout"
+                    :page-sizes="pageSizes"
+                    :total="total"
+                    v-bind="$attrs"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                  />
+                  </div>
+                `,
       },
     },
     data() {
       return {
         conf: {},
-        currentRuleType: {},
         add: {
           view: false,
           // 0-查看，1-新增，2-编辑
           type: 0,
           open: false,
-          title: "新增规则",
-          rules: {
-            productItemCode: [
-              {
-                required: true,
-                message: "产品物料号",
-                trigger: "blur",
-              },
-            ],
-            processType: [
-              {
-                required: true,
-                message: "请选择工序",
-                trigger: "blur",
-              },
-            ],
-            checkType: [
-              {
-                required: true,
-                message: "请选择是否需要校验",
-                trigger: "blur",
-              },
-            ],
-            netAccessTypeNum: [
-              {
-                required: true,
-                message: "请输入进网证数量",
-                trigger: "blur",
-              },
-            ],
-            netAccessRuleType: [
-              {
-                required: true,
-                message: "请选择进网证规则类型",
-                trigger: "blur",
-              },
-            ],
-            netAccessResourceName: [
-              {
-                required: true,
-                message: "请输入进网证物料号",
-                trigger: "blur",
-              },
-            ],
-            labelItemCode: [
-              {
-                required: true,
-                message: "请输入标签物料号",
-                trigger: "blur",
-              },
-            ],
-            netAccessBindType: [
-              {
-                required: true,
-                message: "请选择绑定类型",
-                trigger: "blur",
-              },
-            ],
-          },
+          title: "修改用户信息",
+          rules: {},
           form: {
             id: "",
-            productItemCode: "",
-            deviceTypeName: "",
-            processType: "",
-            checkType: "",
-            netAccessTypeNum: "",
-            netAccessResourceName: "",
-            netAccessBindType: "",
-            labelItemCode: "",
-            netAccessRuleType: 0,
-            netAccessRuleCfg: "",
+            displayName: "",
+            username: "",
+            roles: [],
           },
           selected: {},
         },
-        // 遮罩层
-        fullscreenLoading: false,
         loading: false,
         // 查询参数
         queryParams: {
           pageIndex: 1,
           pageSize: 10,
-          productItemCode: "",
-          deviceTypeName: "",
-          processType: "",
-          checkType: "",
+          username: "",
+          dept: "",
         },
         // 表格数据
         list: [],
@@ -238,7 +196,6 @@
     watch: {},
     // 生命周期 - 创建完成（访问当前this实例）
     created() {
-      debugger;
       this.init();
     },
     // 生命周期 - 挂载完成（访问DOM元素）
@@ -261,44 +218,44 @@
         this.getList();
         this.queryParams.pageIndex = 1;
       },
-      handleViewOpen(row) {
-        this.add.selected = row;
-        this.add.view = true;
-        this.add.type = 0;
-        this.add.open = true;
-        this.add.title = "查看规则";
-        this.setAddFormData(row);
-      },
       handleAddOpen() {
         this.add.view = false;
         this.add.type = 1;
         this.add.open = true;
-        this.add.title = "新增规则";
+        this.add.title = "新增用户";
       },
       handleModifyOpen(row) {
         this.add.selected = row;
         this.add.view = false;
         this.add.type = 2;
         this.add.open = true;
-        this.add.title = "编辑规则";
+        this.add.title = "修改用户信息";
         this.setAddFormData(row);
       },
       handleDeleteOpen(row) {
-        this.$confirm("是否确定删除当前规则？", "提示", {
+        this.$confirm("是否确定删除当前用户，该操作不可撤销？", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
         }).then(() => {
-          this.delete(row.id);
+          this.deleteByUsername(row.username);
+        });
+          },
+          handleResetPasswordByUsername(row) {
+        this.$confirm("是否将当前用户密码重置为默认密码(123456)", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          this.resetPasswordByUsername(row.username);
         });
       },
       handleAddClose() {
         this.add.view = false;
         this.add.open = false;
         this.add.type = 0;
-        this.add.title = "查看规则";
+        this.add.title = "";
         this.add.selected = "";
-        this.currentRuleType = this.conf.netAccessRuleType[0];
         this.resetAddForm();
       },
       handleSubmitAdd() {
@@ -319,18 +276,16 @@
         for (let key in this.add.form) {
           this.add.form[key] = "";
         }
-        this.add.form.netAccessRuleType = 0;
       },
       /** 配置 */
       getConf() {
         this.loading = true;
-        const api = "/net/access/rule/conf";
+        const api = "/user/manager/conf";
         this.$http
-          .get(APP_URL + api, null, null, HEADER)
+          .get(api, null, null, null)
           .then((res) => {
             if (res.code === "200" && res.data != null) {
               this.conf = res.data;
-              this.currentRuleType = this.conf.netAccessRuleType[0];
             } else {
               this.$message.error(res.msg.join("，"));
             }
@@ -342,9 +297,9 @@
       /** 查询列表 */
       getList() {
         this.loading = true;
-        const api = "/net/access/rule/page";
+        const api = "/user/manager/page";
         this.$http
-          .post(APP_URL + api, this.queryParams, null, HEADER)
+          .post(api, this.queryParams, null, null)
           .then((res) => {
             if (res.code === "200") {
               if (res.data != null) {
@@ -358,24 +313,15 @@
           .finally(() => {
             this.loading = false;
           });
-      },
-      netAccessRuleTypeChange(val) {
-        for (let i = 0; i < this.conf.netAccessRuleType.length; i++) {
-          let item = this.conf.netAccessRuleType[i];
-          if (val == item.code) {
-            this.currentRuleType = item;
-          }
-        }
-      },
-      /** 新增 */
-      addNew(entity) {
+          },
+          addNew(userInfo) {
         this.loading = true;
-        const api = "/net/access/rule/add";
+        const api = "/user/manager/add";
         this.$http
-          .post(APP_URL + api, entity, null, HEADER)
+          .post(api, userInfo, null, null)
           .then((res) => {
             if (res.code === "200") {
-              this.$message.success("规则创建成功！");
+              this.$message.success("新增成功！");
               this.handleAddSuccess();
             } else {
               this.$message.error(res.msg.join("，"));
@@ -384,16 +330,15 @@
           .finally(() => {
             this.loading = false;
           });
-      },
-      /** 编辑 */
-      modify(entity) {
+          },
+      modify(userInfo) {
         this.loading = true;
-        const api = "/net/access/rule/modify";
+        const api = "/user/manager/modify";
         this.$http
-          .post(APP_URL + api, entity, null, HEADER)
+          .post(api, userInfo, null, null)
           .then((res) => {
             if (res.code === "200") {
-              this.$message.success("规则修改成功！");
+              this.$message.success("修改成功！");
               this.handleModifySuccess();
             } else {
               this.$message.error(res.msg.join("，"));
@@ -402,17 +347,39 @@
           .finally(() => {
             this.loading = false;
           });
-      },
-      /** 删除 */
-      delete(id) {
+          },
+        deleteByUsername(username) {
         this.loading = true;
-        const api = "/net/access/rule/delete?id=" + id;
+        let userInfo = {
+            username: username
+        }
+        const api = "/user/manager/deleteByUsername";
         this.$http
-          .post(APP_URL + api, null, null, HEADER)
+          .post(api, userInfo, null, null)
           .then((res) => {
             if (res.code === "200") {
-              this.$message.success("规则删除成功！");
-              this.getList();
+              this.$message.success("删除成功！");
+              this.search();
+            } else {
+              this.$message.error(res.msg.join("，"));
+            }
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+          },
+          resetPasswordByUsername(username) {
+        this.loading = true;
+        let userInfo = {
+            username: username
+        }
+        const api = "/user/manager/resetPasswordByUsername";
+        this.$http
+          .post(api, userInfo, null, null)
+          .then((res) => {
+            if (res.code === "200") {
+              this.$message.success("该用户密码已重置为默认密码:123456！");
+              this.search();
             } else {
               this.$message.error(res.msg.join("，"));
             }
