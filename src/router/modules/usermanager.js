@@ -16,6 +16,14 @@ const userManagerRouter = {
       meta: {
         title: 'usermanager'
       }
+    },
+    {
+        path: 'rolemanager',
+        component: () => import('@/views/altc/rolemanager.vue'),
+        name: 'rolemanager',
+        meta: {
+            title: 'rolemanager'
+        }
     }
   ]
 }

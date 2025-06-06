@@ -68,6 +68,7 @@ export default {
       profile: "个人中心",
       base: "基础配置",
       usermanager: "用户管理",
+      rolemanager: "角色管理",
     },
     btn: {
       cancel: "取消",

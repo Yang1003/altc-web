@@ -11,11 +11,11 @@ import Layout from '@/layout'
 // import chartsRouter from './modules/charts'
 // import tableRouter from './modules/table'
 // import nestedRouter from './modules/nested'
-import userManagerRouter from './modules/usermanager'
 import testResouceRouter from './modules/testResouceRouter'
 import testProgressRouter from './modules/testProgressRouter'
 import autoLunchRouter from './modules/autoLunchRouter'
 import testAnalysisRouter from './modules/testAnalysisRouter'
+import userManagerRouter from './modules/usermanager'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -187,12 +187,11 @@ export const asyncRoutes = [
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
-  userManagerRouter,
   testResouceRouter,
   testProgressRouter,
   autoLunchRouter,
   testAnalysisRouter,
-
+  userManagerRouter,
   // {
   //   path: '/example',
   //   component: Layout,
